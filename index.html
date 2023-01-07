@@ -23,16 +23,21 @@
           <h3 class="mb-0">Search for a City:</h3>
           <input type="text" class="form-control" id="citySearch" placeholder="Chicago">
           <button type="submit" class="btn btn-primary">Search</button>
-          <hr class="m-1">
+          <hr class="m-1 mb-0">
         </div>
       </div>
       <div class="col-8">
-        <div id=todaysForecast class="row bg-secondary">
+        <div id=todaysForecast class="row h-100 border border-primary rounded">
           <h2></h2>
           <p id="temp"></p>
           <p id="wind"></p>
           <p id="humid"></p>
         </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-3">
+        <div id="cityList" class="d-grid gap-2 ms-4"></div>
       </div>
     </div>
   </main>
