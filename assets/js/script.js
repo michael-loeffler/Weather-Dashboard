@@ -3,6 +3,8 @@ var cityInputEl = $('#citySearch'); // jquery selector for the
 var cityListEl = $('#cityList'); //jquery selector for the 
 var searchBtn = $('.btn'); // jquery selector for the 
 var todaysForecastEl = $('#todaysForecast'); // jquery selector for the 
+var fiveDayForecastEl = $('#fiveDayForecast')
+var fiveDayHeader = $('div.col-8 > h4');
 var todayTemp = $('#temp');
 var todayWind = $('#wind');
 var todayHumid = $('#humid'); 
@@ -73,4 +75,29 @@ function formatWeather(data) {
     todayTemp.text("Temp: " + temp + "°F");
     todayWind.text("Wind: " + wind + " MPH");
     todayHumid.text("Humidity: " + humid + " %");
+    fiveDayHeader.text("5-Day Forecast:")
+
+    for (i = 7; i < data.list.length; i+=5) {
+        var fiveDayEl = $('<div>');
+        fiveDayEl.attr("class", "col bg-primary text-white border border-primary rounded");
+        var dayHeader = $('<h2>')
+        var tempP = $('<p>');
+        var windP = $('<p>');
+        var humidP = $('<p>');
+
+        fiveDayEl.append(dayHeader);
+        fiveDayEl.append(tempP);
+        fiveDayEl.append(windP);
+        fiveDayEl.append(humidP);
+        fiveDayForecastEl.append(fiveDayEl);
+
+        temp = data.list[i].main.temp;
+        wind = data.list[i].wind.speed;
+        humid = data.list[i].main.humidity;
+
+        fiveDayEl.children().eq(1).text("Temp: " + temp + "°F");
+        fiveDayEl.children().eq(2).text("Wind: " + wind + " MPH");
+        fiveDayEl.children().eq(3).text("Humidity: " + humid + " %");
+        
+    }
 }
