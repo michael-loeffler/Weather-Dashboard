@@ -68,6 +68,7 @@ function fetchWeather(geo) {
 };
 
 function formatWeather(data) {
+    fiveDayForecastEl.empty();
     var temp = data.list[2].main.temp;
     var wind = data.list[2].wind.speed;
     var humid = data.list[2].main.humidity;
