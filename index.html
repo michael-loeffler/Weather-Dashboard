@@ -28,10 +28,15 @@
       </div>
       <div class="col-8">
         <div id=todaysForecast class="row p-2 h-100 border border-primary rounded">
-          <h2></h2>
-          <p id="temp"></p>
-          <p id="wind"></p>
-          <p id="humid"></p>
+          <div class="col-3 col-md-4">
+            <h2 id="cityDate"></h2>
+            <p id="temp"></p>
+            <p id="wind"></p>
+            <p id="humid"></p>
+          </div>
+          <div class="col-2 d-flex justify-content-center">
+            <img id="iconSpan" class="h-100">
+          </div>
         </div>
       </div>
     </div>
@@ -40,8 +45,8 @@
         <div id="cityList" class="d-grid gap-2 ms-4 mt-2"></div>
       </div>
       <div class="col-8 mt-2">
-        <h4></h4>
-        <div id="fiveDayForecast" class="row"></div>
+        <h4 id="fiveDayHeader"></h4>
+        <div id="fiveDayForecast" class="row gap-2"></div>
       </div>
     </div>
   </main>

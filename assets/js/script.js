@@ -3,11 +3,12 @@ var cityInputEl = $('#citySearch'); // jquery selector for the
 var cityListEl = $('#cityList'); //jquery selector for the 
 var searchBtn = $('.btn'); // jquery selector for the 
 var todaysForecastEl = $('#todaysForecast'); // jquery selector for the 
+var iconSpan = $('#iconSpan');
 var fiveDayForecastEl = $('#fiveDayForecast')
-var fiveDayHeader = $('div.col-8 > h4');
+var fiveDayHeader = $('#fiveDayHeader');
 var todayTemp = $('#temp');
 var todayWind = $('#wind');
-var todayHumid = $('#humid'); 
+var todayHumid = $('#humid');
 //-- VARIABLE INITIALIZATIONS --//
 var cityInputVal = "";
 var cityNames = [];
@@ -29,7 +30,7 @@ function getCityName() {
     cityQuery = cityInputVal;
     cityInputEl.val("");
     localStorage.setItem("cityList", JSON.stringify(cityNames));
-    todaysForecastEl.children('h2').text(cityInputVal + " " + today);
+    $('#cityDate').text(cityInputVal + " " + today);
     var newCityEl = $('<button>');
     newCityEl.addClass("btn btn-secondary");
     newCityEl.attr("type", "submit");
@@ -55,7 +56,7 @@ function fetchGeo() {
 function fetchWeather(geo) {
     lat = JSON.stringify(geo[0].lat);
     lon = JSON.stringify(geo[0].lon);
-    weatherAPI = "http://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&appid=3cd5ec4ae813460e4a92950deefd645a&units=imperial&cnt=30";
+    weatherAPI = "http://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&appid=3cd5ec4ae813460e4a92950deefd645a&units=imperial&cnt=40";
     fetch(weatherAPI)
         .then(function (response) {
             if (response.ok) {
@@ -69,36 +70,53 @@ function fetchWeather(geo) {
 
 function formatWeather(data) {
     fiveDayForecastEl.empty();
+    
     var temp = data.list[2].main.temp;
     var wind = data.list[2].wind.speed;
     var humid = data.list[2].main.humidity;
-
+    var iconCode = data.list[2].weather[0].icon;
+    var iconURL = "http://openweathermap.org/img/wn/" + iconCode + "@2x.png";
+    iconSpan.attr("src", iconURL);
+        
     todayTemp.text("Temp: " + temp + "°F");
     todayWind.text("Wind: " + wind + " MPH");
     todayHumid.text("Humidity: " + humid + " %");
+
     fiveDayHeader.text("5-Day Forecast:")
 
-    for (i = 7; i < data.list.length; i+=5) {
-        var fiveDayEl = $('<div>');
-        fiveDayEl.attr("class", "col bg-primary text-white border border-primary rounded");
-        var dayHeader = $('<h2>')
-        var tempP = $('<p>');
-        var windP = $('<p>');
-        var humidP = $('<p>');
+    for (i = 0; i < data.list.length; i++) {
+        var date = data.list[i].dt_txt;
+        var hour = dayjs(date).format('H')
+        // console.log(hour);
+        date = dayjs(date).format('(M/D/YY)');
+        if (hour == 12) { // logs the weather data everyday at noon for each day of the 5 day forecast
+            var fiveDayEl = $('<div>');
+            fiveDayEl.attr("class", "col bg-primary text-white border border-primary rounded p-2");
+            var dayHeader = $('<h4>')
+            var fiveIconSpan = $('<img>')
+            var tempP = $('<p>');
+            var windP = $('<p>');
+            var humidP = $('<p>');
+    
+            fiveDayEl.append(dayHeader);
+            fiveDayEl.append(fiveIconSpan);
+            fiveDayEl.append(tempP);
+            fiveDayEl.append(windP);
+            fiveDayEl.append(humidP);
+            fiveDayForecastEl.append(fiveDayEl);
+            
+            iconCode = data.list[i].weather[0].icon;
+            iconURL = "http://openweathermap.org/img/wn/" + iconCode + "@2x.png";
+            console.log(iconURL);
+            fiveIconSpan.attr("src", iconURL);
+            temp = data.list[i].main.temp;
+            wind = data.list[i].wind.speed;
+            humid = data.list[i].main.humidity;
 
-        fiveDayEl.append(dayHeader);
-        fiveDayEl.append(tempP);
-        fiveDayEl.append(windP);
-        fiveDayEl.append(humidP);
-        fiveDayForecastEl.append(fiveDayEl);
-
-        temp = data.list[i].main.temp;
-        wind = data.list[i].wind.speed;
-        humid = data.list[i].main.humidity;
-
-        fiveDayEl.children().eq(1).text("Temp: " + temp + "°F");
-        fiveDayEl.children().eq(2).text("Wind: " + wind + " MPH");
-        fiveDayEl.children().eq(3).text("Humidity: " + humid + " %");
-        
+            dayHeader.text(date);
+            tempP.text("Temp: " + temp + "°F");
+            windP.text("Wind: " + wind + " MPH");
+            humidP.text("Humidity: " + humid + " %");
+        }
     }
 }
