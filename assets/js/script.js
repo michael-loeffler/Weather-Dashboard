@@ -27,19 +27,20 @@ cityInputEl.on("change", getCityName);
 function getCityName() {
     cityInputVal = cityInputEl.val().trim();
     cityNames.push(cityInputVal);
-    cityQuery = cityInputVal;
+    var cityQuery = cityInputVal;
     cityInputEl.val("");
     localStorage.setItem("cityList", JSON.stringify(cityNames));
     $('#cityDate').text(cityInputVal + " " + today);
+    todaysForecastEl.addClass('bg-warning border-warning')
     var newCityEl = $('<button>');
     newCityEl.addClass("btn btn-secondary");
     newCityEl.attr("type", "submit");
     newCityEl.text(cityInputVal);
     cityListEl.append(newCityEl);
-    fetchGeo();
+    fetchGeo(cityQuery);
 }
 
-function fetchGeo() {
+function fetchGeo(cityQuery) {
     var geoAPI = "http://api.openweathermap.org/geo/1.0/direct?q=" + cityQuery + "&appid=3cd5ec4ae813460e4a92950deefd645a";
     fetch(geoAPI)
         .then(function (response) {
@@ -107,7 +108,6 @@ function formatWeather(data) {
             
             iconCode = data.list[i].weather[0].icon;
             iconURL = "http://openweathermap.org/img/wn/" + iconCode + "@2x.png";
-            console.log(iconURL);
             fiveIconSpan.attr("src", iconURL);
             temp = data.list[i].main.temp;
             wind = data.list[i].wind.speed;
@@ -120,3 +120,12 @@ function formatWeather(data) {
         }
     }
 }
+
+
+function getCityNameFromHistory (event) {
+    var storedCityName = event.target.textContent;
+    $('#cityDate').text(storedCityName + " " + today);
+    fetchGeo(storedCityName)
+}
+
+cityListEl.on("click", getCityNameFromHistory);
