@@ -11,18 +11,21 @@ var todayWind = $('#wind');
 var todayHumid = $('#humid');
 //-- VARIABLE INITIALIZATIONS --//
 var cityInputVal = "";
-var cityNames = [];
 var cityQuery = "";
 var lat = "";
 var lon = "";
 var weatherAPI = "";
-//cityNames = JSON.parse(localStorage.getItem("cityList"));
+var cityNames = JSON.parse(localStorage.getItem("cityList"));
+if (cityNames === null) {
+    cityNames = [];
+}
 var today = dayjs().format('(M/D/YY)');
 
 
 //-- EVENT LISTENTERS --//
 // searchBtn.on("click", getCityName);
 cityInputEl.on("change", getCityName);
+cityListEl.on("click", getCityNameFromHistory);
 
 function getCityName() {
     cityInputVal = cityInputEl.val().trim();
@@ -31,12 +34,14 @@ function getCityName() {
     cityInputEl.val("");
     localStorage.setItem("cityList", JSON.stringify(cityNames));
     $('#cityDate').text(cityInputVal + " " + today);
-    todaysForecastEl.addClass('bg-warning border-warning')
-    var newCityEl = $('<button>');
-    newCityEl.addClass("btn btn-secondary");
-    newCityEl.attr("type", "submit");
-    newCityEl.text(cityInputVal);
-    cityListEl.append(newCityEl);
+    todaysForecastEl.addClass('bg-warning border-warning');
+    // if (!cityNames.includes(cityQuery) || cityNames.length === 0) {
+        var newCityEl = $('<button>');
+        newCityEl.addClass("btn btn-secondary");
+        newCityEl.attr("type", "submit");
+        newCityEl.text(cityInputVal);
+        cityListEl.append(newCityEl);
+    //}
     fetchGeo(cityQuery);
 }
 
@@ -71,14 +76,14 @@ function fetchWeather(geo) {
 
 function formatWeather(data) {
     fiveDayForecastEl.empty();
-    
+
     var temp = data.list[2].main.temp;
     var wind = data.list[2].wind.speed;
     var humid = data.list[2].main.humidity;
     var iconCode = data.list[2].weather[0].icon;
     var iconURL = "http://openweathermap.org/img/wn/" + iconCode + "@2x.png";
     iconSpan.attr("src", iconURL);
-        
+
     todayTemp.text("Temp: " + temp + "°F");
     todayWind.text("Wind: " + wind + " MPH");
     todayHumid.text("Humidity: " + humid + " %");
@@ -98,14 +103,14 @@ function formatWeather(data) {
             var tempP = $('<p>');
             var windP = $('<p>');
             var humidP = $('<p>');
-    
+
             fiveDayEl.append(dayHeader);
             fiveDayEl.append(fiveIconSpan);
             fiveDayEl.append(tempP);
             fiveDayEl.append(windP);
             fiveDayEl.append(humidP);
             fiveDayForecastEl.append(fiveDayEl);
-            
+
             iconCode = data.list[i].weather[0].icon;
             iconURL = "http://openweathermap.org/img/wn/" + iconCode + "@2x.png";
             fiveIconSpan.attr("src", iconURL);
@@ -122,10 +127,24 @@ function formatWeather(data) {
 }
 
 
-function getCityNameFromHistory (event) {
+function getCityNameFromHistory(event) {
     var storedCityName = event.target.textContent;
     $('#cityDate').text(storedCityName + " " + today);
-    fetchGeo(storedCityName)
+    todaysForecastEl.addClass('bg-warning border-warning');
+    fetchGeo(storedCityName);
 }
 
-cityListEl.on("click", getCityNameFromHistory);
+function renderSearchHistory() {
+    var storedCityList = JSON.parse(localStorage.getItem("cityList"));
+    if (storedCityList != null) {
+    for (i = 0; i < storedCityList.length; i++) {
+        var newCityEl = $('<button>');
+        newCityEl.addClass("btn btn-secondary");
+        newCityEl.attr("type", "submit");
+        newCityEl.text(storedCityList[i]);
+        cityListEl.append(newCityEl);
+    }
+}
+}
+
+renderSearchHistory();
