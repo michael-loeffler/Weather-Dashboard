@@ -3,6 +3,7 @@ var cityInputEl = $('#citySearch'); // jquery selector for the
 var cityListEl = $('#cityList'); //jquery selector for the 
 var searchBtn = $('.btn'); // jquery selector for the 
 var todaysForecastEl = $('#todaysForecast'); // jquery selector for the 
+var cityDateEl = $('#cityDate');
 var iconSpan = $('#iconSpan');
 var fiveDayForecastEl = $('#fiveDayForecast')
 var fiveDayHeader = $('#fiveDayHeader');
@@ -32,10 +33,10 @@ function getCityName() {
     cityNames.push(cityInputVal);
     var cityQuery = cityInputVal;
     cityInputEl.val("");
-    localStorage.setItem("cityList", JSON.stringify(cityNames));
-    $('#cityDate').text(cityInputVal + " " + today);
     todaysForecastEl.addClass('bg-warning border-warning');
-    // if (!cityNames.includes(cityQuery) || cityNames.length === 0) {
+    cityDateEl.text(cityInputVal + " " + today);
+    // if (!cityNames.includes(cityQuery) || (cityNames.length === 0) {
+        localStorage.setItem("cityList", JSON.stringify(cityNames));
         var newCityEl = $('<button>');
         newCityEl.addClass("btn btn-secondary");
         newCityEl.attr("type", "submit");
@@ -52,50 +53,69 @@ function fetchGeo(cityQuery) {
             if (response.ok) {
 
                 response.json().then(function (data) {
-                    fetchWeather(data);
-
+                    fetchCurrentWeather(data);
+                    fetchForecast(data);
                 });
             }
         })
 };
 
-function fetchWeather(geo) {
+function fetchCurrentWeather(geo) {
     lat = JSON.stringify(geo[0].lat);
     lon = JSON.stringify(geo[0].lon);
-    weatherAPI = "http://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&appid=3cd5ec4ae813460e4a92950deefd645a&units=imperial&cnt=40";
+    weatherAPI = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=3cd5ec4ae813460e4a92950deefd645a&units=imperial";
+    fetch(weatherAPI)
+        .then(function (response) {
+            if (response.ok) {
+                response.json().then(function (data) {
+                    // console.log(data);
+                    formatCurrentWeather(data);
+                });
+            }
+        })
+};
+
+function fetchForecast(geo) {
+    lat = JSON.stringify(geo[0].lat);
+    lon = JSON.stringify(geo[0].lon);
+    weatherAPI = "http://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&appid=3cd5ec4ae813460e4a92950deefd645a&units=imperial";
     fetch(weatherAPI)
         .then(function (response) {
             if (response.ok) {
                 response.json().then(function (data) {
                     console.log(data);
-                    formatWeather(data);
+                    formatForecast(data);
                 });
             }
         })
 };
 
-function formatWeather(data) {
-    fiveDayForecastEl.empty();
+function formatCurrentWeather(data) {
+    var temp = data.main.temp;
+    var wind = data.wind.speed;
+    var humid = data.main.humidity;
+    // var date = data.dt;
+    // date = dayjs.unix(date).format('M/D/YY')
 
-    var temp = data.list[2].main.temp;
-    var wind = data.list[2].wind.speed;
-    var humid = data.list[2].main.humidity;
-    var iconCode = data.list[2].weather[0].icon;
+    var iconCode = data.weather[0].icon;
     var iconURL = "http://openweathermap.org/img/wn/" + iconCode + "@2x.png";
     iconSpan.attr("src", iconURL);
 
     todayTemp.text("Temp: " + temp + "°F");
     todayWind.text("Wind: " + wind + " MPH");
     todayHumid.text("Humidity: " + humid + " %");
+}
 
+function formatForecast(data) {
+    fiveDayForecastEl.empty();
     fiveDayHeader.text("5-Day Forecast:")
 
     for (i = 0; i < data.list.length; i++) {
         var date = data.list[i].dt_txt;
         var hour = dayjs(date).format('H')
-        // console.log(hour);
         date = dayjs(date).format('(M/D/YY)');
-        if (hour == 12) { // logs the weather data everyday at noon for each day of the 5 day forecast
+        if (hour == 12 && (date != today)) { // logs the weather data everyday at noon for the next five days. Uses loose equality because the hour variable is returned as a string from dayjs
+            console.log(i);
             var fiveDayEl = $('<div>');
             fiveDayEl.attr("class", "col bg-primary text-white border border-primary rounded p-2");
             var dayHeader = $('<h4>')
@@ -129,7 +149,7 @@ function formatWeather(data) {
 
 function getCityNameFromHistory(event) {
     var storedCityName = event.target.textContent;
-    $('#cityDate').text(storedCityName + " " + today);
+    cityDateEl.text(storedCityName + " " + today);
     todaysForecastEl.addClass('bg-warning border-warning');
     fetchGeo(storedCityName);
 }
