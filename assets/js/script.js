@@ -53,7 +53,7 @@ function getCityName() {
 }
 
 function fetchGeo(cityQuery) {
-    var geoAPI = "http://api.openweathermap.org/geo/1.0/direct?q=" + cityQuery + "&appid=3cd5ec4ae813460e4a92950deefd645a";
+    var geoAPI = "https://api.openweathermap.org/geo/1.0/direct?q=" + cityQuery + "&appid=3cd5ec4ae813460e4a92950deefd645a";
     fetch(geoAPI)
         .then(function (response) {
             if (response.ok) {
@@ -69,7 +69,7 @@ function fetchGeo(cityQuery) {
 function fetchCurrentWeather(geo) {
     lat = JSON.stringify(geo[0].lat);
     lon = JSON.stringify(geo[0].lon);
-    weatherAPI = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=3cd5ec4ae813460e4a92950deefd645a&units=imperial";
+    weatherAPI = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=3cd5ec4ae813460e4a92950deefd645a&units=imperial";
     fetch(weatherAPI)
         .then(function (response) {
             if (response.ok) {
