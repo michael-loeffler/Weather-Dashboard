@@ -30,8 +30,12 @@ cityListEl.on("click", getCityNameFromHistory);
 
 function getCityName() {
     cityInputVal = cityInputEl.val().trim();
-    cityInputVal = cityInputVal.charAt(0).toUpperCase() + cityInputVal.slice(1);
-    
+    var words = cityInputVal.split(' ');
+    for (i = 0; i < words.length; i++) {
+        words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+        console.log(words[i]);
+    }
+    cityInputVal = words.join(' ');
     var cityQuery = cityInputVal;
     cityInputEl.val("");
     todaysForecastEl.addClass('bg-warning border-warning');
@@ -98,6 +102,7 @@ function formatCurrentWeather(data) {
     var humid = data.main.humidity;
     // var date = data.dt;
     // date = dayjs.unix(date).format('M/D/YY')
+    // console.log(date);
 
     var iconCode = data.weather[0].icon;
     var iconURL = "http://openweathermap.org/img/wn/" + iconCode + "@2x.png";
@@ -116,7 +121,7 @@ function formatForecast(data) {
         var date = data.list[i].dt_txt;
         var hour = dayjs(date).format('H')
         date = dayjs(date).format('(M/D/YY)');
-        if (hour == 12 && (date != today)) { // logs the weather data everyday at noon for the next five days. Uses loose equality because the hour variable is returned as a string from dayjs
+        if ((hour == 12) && (date != today)) { // logs the weather data everyday at noon for the next five days. Uses loose equality because the hour variable is returned as a string from dayjs
             // console.log(i);
             var fiveDayEl = $('<div>');
             fiveDayEl.attr("class", "col bg-primary text-white border border-primary rounded p-2");
