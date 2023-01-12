@@ -10,6 +10,7 @@ var forecastHeader = $('#forecastHeader');
 var currentTemp = $('#temp');
 var currentWind = $('#wind');
 var currentHumid = $('#humid');
+
 //-- VARIABLE INITIALIZATIONS --//
 var cityInputVal = "";
 var cityQuery = "";
@@ -22,8 +23,7 @@ if (cityNames === null) {
 }
 
 //-- EVENT LISTENTERS --//
-// --------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> searchBtn.on("click", getCityName);
-cityInputEl.on("change", getCityName);
+searchBtn.on("click", getCityName);
 cityListEl.on("click", getCityNameFromHistory);
 
 //-- GET CITY NAME FUNCTION --//
@@ -79,7 +79,6 @@ function fetchCurrentWeather(geo) {
         .then(function (response) {
             if (response.ok) {
                 response.json().then(function (data) {
-                    // console.log(data);
                     formatCurrentWeather(data);
                 });
             }
@@ -96,7 +95,6 @@ function fetchForecast(geo) {
         .then(function (response) {
             if (response.ok) {
                 response.json().then(function (data) {
-                    // console.log(data);
                     formatForecast(data);
                 });
             }
@@ -109,9 +107,6 @@ function formatCurrentWeather(data) {
     var temp = data.main.temp;
     var wind = data.wind.speed;
     var humid = data.main.humidity;
-    // var date = data.dt;
-    // date = dayjs.unix(date).format('M/D/YY')
-    // console.log(date);
 
     var iconCode = data.weather[0].icon;
     var iconURL = "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
@@ -135,7 +130,6 @@ function formatForecast(data) {
         if ((hour == 12) && (date != today)) { // logs the weather data everyday at noon for the next five days. Uses loose equality because the hour variable is returned as a string from dayjs. It also ensures no data from the current day is logged in this section 
 
             //- Creates new HTML elements for a given day's weather data to be stored -//
-            // console.log(i);
             var fiveDayEl = $('<div>');
             fiveDayEl.attr("class", "col bg-primary text-white border border-primary rounded p-2");
             var dayHeader = $('<h4>')
